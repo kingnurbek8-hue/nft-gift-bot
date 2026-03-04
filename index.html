@@ -6,114 +6,62 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --bg: #050505; --accent: #32CD32; --gold: #ffd700; --blue: #00d1ff; }
-        body { background: var(--bg); color: white; font-family: 'Poppins', sans-serif; margin: 0; padding: 15px; overflow-x: hidden; }
+        body { background: #000; color: #fff; font-family: sans-serif; margin: 0; padding: 15px; text-align: center; overflow: hidden; }
         
-        /* Charaqlaydigan fon */
-        .glow-bg { position: fixed; top: -50px; left: -50px; width: 200px; height: 200px; background: var(--accent); filter: blur(120px); opacity: 0.2; z-index: -1; }
+        /* Charaqlaydigan effektlar */
+        .neon-glow { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 100%; height: 100%; background: radial-gradient(circle, rgba(50,205,50,0.1) 0%, transparent 70%); z-index: -1; }
 
-        /* Balance & Header */
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        .balance-card { background: rgba(255,255,255,0.05); padding: 10px 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); }
-        .balance-card span { color: var(--blue); font-weight: bold; font-size: 22px; text-shadow: 0 0 10px var(--blue); }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .bal { background: #111; padding: 10px 20px; border-radius: 20px; border: 1px solid #32CD32; box-shadow: 0 0 10px #32CD32; }
+        .bal span { color: #32CD32; font-weight: bold; font-size: 20px; }
 
-        /* Qimirlaydigan Raketa Banner */
-        .rocket-card { 
-            width: 100%; height: 120px; background: linear-gradient(135deg, #1a1a1a, #001f3f); 
-            border-radius: 25px; position: relative; overflow: hidden; display: flex; align-items: center; padding: 20px; margin-bottom: 20px;
-            border: 1px solid rgba(0, 209, 255, 0.3);
-        }
-        .rocket-card h2 { font-size: 28px; font-style: italic; color: var(--blue); z-index: 2; }
-        .rocket-img { 
-            position: absolute; right: 20px; width: 100px; 
-            animation: rocket-fly 3s ease-in-out infinite; 
-        }
-        @keyframes rocket-fly {
-            0%, 100% { transform: translateY(0) rotate(-5deg); }
-            50% { transform: translateY(-15px) rotate(5deg); }
-        }
+        /* Qimirlaydigan Raketa */
+        .rocket-box { background: #111; padding: 20px; border-radius: 25px; margin-bottom: 30px; border: 1px solid #00d1ff; position: relative; }
+        .rocket-box h2 { color: #00d1ff; margin: 0; font-style: italic; }
+        .rocket-img { width: 80px; position: absolute; right: 20px; top: 10px; animation: fly 2s infinite ease-in-out; }
+        @keyframes fly { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
-        /* Charaqlaydigan Pepe Free Case */
-        .section-title { font-size: 18px; margin-bottom: 15px; letter-spacing: 1px; color: #888; }
-        .case-container {
-            background: #111; border-radius: 30px; padding: 25px; text-align: center;
-            border: 2px solid var(--accent); box-shadow: 0 0 30px rgba(50, 205, 50, 0.15);
-            position: relative; transition: 0.3s;
+        /* Charaqlaydigan Pepe Case */
+        .case-card { 
+            background: #050505; border: 2px solid #32CD32; border-radius: 30px; padding: 30px; 
+            box-shadow: 0 0 25px rgba(50, 205, 50, 0.3); animation: pulse 2s infinite;
         }
-        .pepe-img { 
-            width: 160px; filter: drop-shadow(0 0 15px var(--accent)); 
-            animation: pulse 2s infinite; cursor: pointer;
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); filter: drop-shadow(0 0 15px var(--accent)); }
-            50% { transform: scale(1.05); filter: drop-shadow(0 0 30px var(--accent)); }
-            100% { transform: scale(1); filter: drop-shadow(0 0 15px var(--accent)); }
-        }
+        @keyframes pulse { 0% { box-shadow: 0 0 15px #32CD32; } 50% { box-shadow: 0 0 35px #32CD32; } 100% { box-shadow: 0 0 15px #32CD32; } }
+        .pepe { width: 180px; filter: drop-shadow(0 0 10px #32CD32); }
 
-        .timer-box { font-size: 26px; font-weight: bold; color: var(--gold); margin-top: 15px; display: none; text-shadow: 0 0 10px var(--gold); }
-        .btn-pay { background: var(--accent); color: black; border: none; width: 100%; padding: 15px; border-radius: 15px; font-weight: bold; font-size: 18px; margin-top: 15px; cursor: pointer; }
-
-        /* Bottom Navbar */
-        .navbar { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.9); display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #222; }
-        .nav-item { color: #444; font-size: 22px; }
-        .nav-item.active { color: var(--accent); text-shadow: 0 0 10px var(--accent); }
+        .btn { background: #32CD32; color: #000; border: none; width: 100%; padding: 18px; border-radius: 15px; font-weight: bold; font-size: 18px; margin-top: 20px; cursor: pointer; }
+        .timer { font-size: 24px; color: #ffd700; margin-top: 15px; display: none; font-weight: bold; }
     </style>
 </head>
 <body>
-    <div class="glow-bg"></div>
-
+    <div class="neon-glow"></div>
+    
     <div class="header">
-        <div class="balance-card">
-            <small style="display:block; color:#888; font-size:10px;">BALANCE</small>
-            <span>0.00 <small style="font-size:12px;">TON</small></span>
-        </div>
-        <i class="fa-solid fa-wallet" style="font-size: 24px; color: var(--accent);" onclick="alert('Min: 0.1 TON / 250 Stars')"></i>
+        <div class="bal"><span>0.00 TON</span></div>
+        <i class="fa-solid fa-wallet" style="color:#32CD32; font-size: 25px;" onclick="alert('Min: 0.1 TON / 250 Stars')"></i>
     </div>
 
-    <div class="rocket-card">
+    <div class="rocket-box">
         <h2>ROCKET</h2>
         <img src="https://cdn-icons-png.flaticon.com/512/1356/1356479.png" class="rocket-img">
     </div>
 
-    <div class="section-title">EXCLUSIVE FREE CASE</div>
-    <div class="case-container">
-        <img src="https://i.ibb.co/vYm6v6K/pepe-gift.png" class="pepe-img" id="pepe-box" onclick="startClaim()">
-        <h3 style="margin: 10px 0 5px;">Pepe Special</h3>
-        <p style="color: #666; font-size: 12px; margin: 0;">Subscribe to channel & claim</p>
-        
-        <button class="btn-pay" id="claim-btn" onclick="startClaim()">OPEN FREE</button>
-        <div class="timer-box" id="timer">24:00:00</div>
-    </div>
-
-    <div class="navbar">
-        <i class="fa-solid fa-house nav-item active"></i>
-        <i class="fa-solid fa-users nav-item"></i>
-        <i class="fa-solid fa-trophy nav-item"></i>
-        <i class="fa-solid fa-coins nav-item"></i>
+    <div class="case-card">
+        <img src="https://i.ibb.co/vYm6v6K/pepe-gift.png" class="pepe">
+        <h2 style="margin: 10px 0;">Pepe Free Case</h2>
+        <button class="btn" id="btn" onclick="openBox()">OPEN FREE</button>
+        <div class="timer" id="timer">24:00:00</div>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
-        tg.headerColor = "#050505";
 
-        function startClaim() {
-            tg.HapticFeedback.notificationOccurred('success');
-            // Botga obunani tekshirish uchun xabar yuboradi
-            tg.sendData("check_sub");
-            
-            // Taymerni ko'rsatish
-            document.getElementById('claim-btn').style.display = 'none';
+        function openBox() {
+            tg.HapticFeedback.impactOccurred('heavy');
+            document.getElementById('btn').style.display = 'none';
             document.getElementById('timer').style.display = 'block';
-            let time = 24 * 60 * 60;
-            setInterval(() => {
-                time--;
-                let h = Math.floor(time / 3600);
-                let m = Math.floor((time % 3600) / 60);
-                let s = time % 60;
-                document.getElementById('timer').innerText = 
-                    `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-            }, 1000);
+            // Taymer kodi...
         }
     </script>
 </body>
