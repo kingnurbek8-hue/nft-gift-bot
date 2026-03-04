@@ -1,20 +1,20 @@
 import telebot
 from telebot import types
 
-TOKEN = 'BOT_TOKENINGIZ'
+TOKEN = '8743861596:AAFN5YiHbRscPHxTwd_c2r0C6CzyM1gwzCw'
 bot = telebot.TeleBot(TOKEN)
 
-# Botni ochganda pastda katta tugma turishi uchun
+
 @bot.message_handler(commands=['start'])
 def start(message):
-    # Web App manzilingiz
-    web_app_url = "https://SAYTINGIZ_MANZILI.onrender.com"
     
-    # 1. Chat ichidagi tugma
+    web_app_url = "https://https://t.me/OnyxCratebot"
+    
+
     markup = types.InlineKeyboardMarkup()
     markup.add(types.InlineKeyboardButton("🚀 START GAME", web_app=types.WebAppInfo(web_app_url)))
     
-    # 2. Pastki Menu tugmasini o'zgartirish (Siz xohlagan narsa)
+    
     bot.set_chat_menu_button(message.chat.id, types.MenuButtonWebApp("Play", types.WebAppInfo(web_app_url)))
     
     bot.send_message(message.chat.id, "<b>Welcome!</b>\nPress the button below to start.", parse_mode="HTML", reply_markup=markup)
