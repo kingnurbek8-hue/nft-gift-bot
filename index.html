@@ -1,98 +1,123 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uz">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --bg: #121212; --card: #1c1c1c; --accent: #8e54e9; --ton-blue: #00d1ff; }
-        body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; margin: 0; padding: 12px; padding-bottom: 90px; }
+        :root { --bg: #000; --card: #121212; --accent: #32CD32; --blue: #00d1ff; }
+        body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; padding: 15px; padding-bottom: 80px; overflow-x: hidden; }
         
-        /* Top Header */
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .user-info { display: flex; align-items: center; gap: 10px; }
-        .avatar { width: 40px; height: 40px; background: linear-gradient(45deg, #4776E6, #8E54E9); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 2px solid #333; }
-        .balance-box { background: #1c1c1c; padding: 5px 15px; border-radius: 20px; display: flex; align-items: center; gap: 8px; border: 1px solid #333; }
-        .balance-box span { color: white; font-size: 20px; font-weight: bold; }
-        .deposit-btn { background: #8e54e9; border: none; color: white; padding: 10px 20px; border-radius: 12px; font-weight: bold; box-shadow: 0 4px 15px rgba(142, 84, 233, 0.3); }
+        /* Header */
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .balance { background: var(--card); padding: 8px 15px; border-radius: 20px; border: 1px solid #333; font-weight: bold; }
+        .balance span { color: var(--blue); }
 
-        /* LIVE Section */
-        .live-bar { display: flex; gap: 10px; overflow-x: auto; margin-bottom: 20px; padding-bottom: 5px; }
-        .live-item { min-width: 50px; height: 50px; background: linear-gradient(135deg, #d49aff, #8e54e9); border-radius: 12px; }
+        /* Views */
+        .view { display: none; }
+        .view.active { display: block; }
 
-        /* Banners (Rocket & PVP) */
-        .banner { border-radius: 25px; padding: 20px; margin-bottom: 12px; position: relative; overflow: hidden; height: 110px; box-sizing: border-box; }
-        .rocket-banner { background: linear-gradient(90deg, #94dfff, #64b5f6); color: white; }
-        .pvp-banner { background: linear-gradient(90deg, #ffcc33, #ffb300); color: white; }
-        .banner h2 { margin: 0; font-size: 28px; font-style: italic; font-weight: 900; }
-        .banner img { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); width: 100px; }
+        /* Case Card */
+        .case-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .case-card { background: var(--card); border-radius: 25px; padding: 20px; text-align: center; border: 1px solid #222; }
+        .case-card img { width: 100%; max-width: 100px; margin-bottom: 10px; transition: 0.3s; }
+        .case-card:active img { transform: scale(0.9); }
+        .btn-open { background: var(--accent); color: black; border: none; width: 100%; padding: 12px; border-radius: 15px; font-weight: bold; margin-top: 10px; }
 
-        /* Small Buttons (Contracts & Upgrade) */
-        .small-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-        .s-btn { padding: 15px; border-radius: 20px; display: flex; align-items: center; justify-content: space-between; font-weight: bold; font-size: 14px; text-transform: uppercase; }
-        .btn-purple { background: #5c2fb3; }
-        .btn-green { background: #2fb35c; }
+        /* Backpack Item */
+        .item-card { background: #1a1a1a; border-radius: 15px; padding: 10px; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; border-left: 4px solid var(--accent); }
 
-        /* Bottom Nav */
-        .nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #181818; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #222; z-index: 100; }
-        .nav-item { color: #888; text-align: center; font-size: 10px; text-decoration: none; }
-        .nav-item i { font-size: 22px; display: block; margin-bottom: 4px; }
-        .nav-item.active { color: #8e54e9; }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { display: none; }
+        /* Nav */
+        .nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #080808; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #222; }
+        .nav-item { color: #555; text-align: center; font-size: 11px; text-decoration: none; }
+        .nav-item.active { color: var(--accent); }
+        .nav-item i { font-size: 22px; display: block; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="user-info">
-            <div class="avatar">MB</div>
-            <div style="font-size: 12px; color: #888;">Your balance<br>
-                <div class="balance-box">
-                    <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" width="20">
-                    <span>0.095</span>
-                </div>
+        <div class="balance">💎 <span id="user-balance">0.00</span></div>
+        <button onclick="alert('Tez kunda...')" style="background:var(--blue); border:none; padding:8px 15px; border-radius:12px; font-weight:bold;">DEPOSIT</button>
+    </div>
+
+    <div id="home" class="view active">
+        <h3 style="color: #888;">EXCLUSIVE CASES</h3>
+        <div class="case-grid">
+            <div class="case-card" style="border-color: var(--accent);">
+                <img src="https://i.ibb.co/vYm6v6K/pepe-gift.png">
+                <div>Free24 Case</div>
+                <button class="btn-open" onclick="openCase('Pepe Ring', 0.05)">OPEN FREE</button>
+            </div>
+            <div class="case-card">
+                <img src="https://cdn-icons-png.flaticon.com/512/2850/2850366.png">
+                <div>Farm Case</div>
+                <button class="btn-open" style="background:#444; color:white;">0.1 TON</button>
             </div>
         </div>
-        <button class="deposit-btn"><span>+</span> Deposit</button>
     </div>
 
-    <div class="live-bar">
-        <div style="color:white; font-size: 12px; writing-mode: vertical-lr; transform: rotate(180deg); font-weight: bold;">LIVE •</div>
-        <div class="live-item"></div><div class="live-item"></div><div class="live-item"></div><div class="live-item"></div><div class="live-item"></div>
+    <div id="backpack" class="view">
+        <h3>MY ITEMS</h3>
+        <div id="items-list">
+            <p style="color: #555; text-align: center;">Sumkangiz hozircha bo'sh...</p>
+        </div>
     </div>
 
-    <div class="banner rocket-banner">
-        <h2>ROCKET</h2>
-        <img src="https://cdn-icons-png.flaticon.com/512/1356/1356479.png">
-    </div>
-
-    <div class="banner pvp-banner">
-        <div style="background: white; color: orange; font-size: 10px; padding: 2px 8px; border-radius: 10px; display: inline-block; margin-bottom: 5px; font-weight: bold;">🔥 NEW!</div>
-        <h2>PVP</h2>
-        <img src="https://cdn-icons-png.flaticon.com/512/3233/3233483.png" style="width: 80px; opacity: 0.5;">
-    </div>
-
-    <div class="small-btns">
-        <div class="s-btn btn-purple"><span>📝 Contracts</span> <i class="fa-solid fa-chevron-right"></i></div>
-        <div class="s-btn btn-green"><span>⬆️ Upgrade</span> <i class="fa-solid fa-chevron-right"></i></div>
+    <div id="invite" class="view" style="text-align: center; padding-top: 40px;">
+        <i class="fa-solid fa-user-plus" style="font-size: 60px; color: var(--accent);"></i>
+        <h2>Invite Friends</h2>
+        <p>Har bir taklif uchun 0.01 TON oling!</p>
+        <button class="btn-open" onclick="window.Telegram.WebApp.openTelegramLink('https://t.me/share/url?url=t.me/SizningBotiz')">INVITE</button>
     </div>
 
     <div class="nav">
-        <div class="nav-item"><i class="fa-solid fa-box"></i>Backpack</div>
-        <div class="nav-item"><i class="fa-solid fa-user-plus"></i>Invite</div>
-        <div class="nav-item active"><i class="fa-solid fa-house"></i>Home</div>
-        <div class="nav-item"><i class="fa-solid fa-ranking-star"></i>Leaderboard</div>
-        <div class="nav-item"><i class="fa-solid fa-coins"></i>Earn</div>
+        <div class="nav-item" onclick="showView('backpack', this)"><i class="fa-solid fa-briefcase"></i>Backpack</div>
+        <div class="nav-item" onclick="showView('invite', this)"><i class="fa-solid fa-users"></i>Invite</div>
+        <div class="nav-item active" onclick="showView('home', this)"><i class="fa-solid fa-house"></i>Home</div>
+        <div class="nav-item"><i class="fa-solid fa-chart-line"></i>Leader</div>
+        <div class="nav-item"><i class="fa-solid fa-wallet"></i>Earn</div>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
-        tg.backgroundColor = "#121212";
-        tg.headerColor = "#121212";
+        let balance = 0.00;
+        let items = [];
+
+        function showView(id, el) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            el.classList.add('active');
+            tg.HapticFeedback.impactOccurred('light');
+        }
+
+        function openCase(itemName, price) {
+            tg.HapticFeedback.notificationOccurred('success');
+            balance += price;
+            document.getElementById('user-balance').innerText = balance.toFixed(2);
+            
+            items.push(itemName);
+            updateBackpack();
+            
+            tg.showPopup({
+                title: 'Tabriklaymiz!',
+                message: 'Sizga ' + itemName + ' tushdi va balansingizga $' + price + ' qo\'shildi!',
+                buttons: [{type: 'ok'}]
+            });
+        }
+
+        function updateBackpack() {
+            const list = document.getElementById('items-list');
+            list.innerHTML = items.map(item => `
+                <div class="item-card">
+                    <i class="fa-solid fa-gem" style="color:var(--blue)"></i>
+                    <span>${item}</span>
+                </div>
+            `).join('');
+        }
     </script>
 </body>
 </html>
