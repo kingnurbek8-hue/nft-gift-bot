@@ -9,8 +9,8 @@ bot = telebot.TeleBot(TOKEN)
 def start(message):
     # Diqqat! Bu yerga o'zingizning Render saytingiz manzilini yozing
     # Masalan: https://nft-gift-bot.onrender.com
-    web_app_url = "https://SAYTINGIZ_MANZILI.onrender.com"
-    
+    web_app_url = "https://kingnurbek8-hue.github.io/nft-gift-bot/"
+
     markup = types.InlineKeyboardMarkup()
     # Chat ichidagi asosiy tugma
     markup.add(types.InlineKeyboardButton("🚀 ENTER GAME", web_app=types.WebAppInfo(web_app_url)))
