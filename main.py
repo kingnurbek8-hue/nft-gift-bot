@@ -1,19 +1,22 @@
 import telebot
 from telebot import types
 
-TOKEN = '8743861596:AAFN5YiHbRscPHxTwd_c2r0C6CzyM1gwzCw'
+TOKEN = 'BOT_TOKENINGIZ'
 bot = telebot.TeleBot(TOKEN)
 
+# Botni ochganda pastda katta tugma turishi uchun
 @bot.message_handler(commands=['start'])
 def start(message):
-    markup = types.InlineKeyboardMarkup()
-    # Web App manzilingizni to'g'ri yozing
-    web_app = types.WebAppInfo("https://SAYTINGIZ_MANZILI.onrender.com")
-    markup.add(types.InlineKeyboardButton("🚀 ENTER GAME", web_app=web_app))
+    # Web App manzilingiz
+    web_app_url = "https://SAYTINGIZ_MANZILI.onrender.com"
     
-    bot.send_message(message.chat.id, 
-        "<b>Welcome to the Premium Pepe Case!</b>\n\n"
-        "Click the button below to enter the game and claim your rewards.", 
-        parse_mode="HTML", reply_markup=markup)
+    # 1. Chat ichidagi tugma
+    markup = types.InlineKeyboardMarkup()
+    markup.add(types.InlineKeyboardButton("🚀 START GAME", web_app=types.WebAppInfo(web_app_url)))
+    
+    # 2. Pastki Menu tugmasini o'zgartirish (Siz xohlagan narsa)
+    bot.set_chat_menu_button(message.chat.id, types.MenuButtonWebApp("Play", types.WebAppInfo(web_app_url)))
+    
+    bot.send_message(message.chat.id, "<b>Welcome!</b>\nPress the button below to start.", parse_mode="HTML", reply_markup=markup)
 
 bot.polling(none_stop=True)
