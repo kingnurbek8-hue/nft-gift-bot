@@ -6,117 +6,93 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --bg: #000; --card: #111; --accent: #32CD32; --blue: #00d1ff; --text: #fff; }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 15px; padding-bottom: 80px; }
+        :root { --bg: #121212; --card: #1c1c1c; --accent: #8e54e9; --ton-blue: #00d1ff; }
+        body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; margin: 0; padding: 12px; padding-bottom: 90px; }
         
-        /* Top Navigation (Balance & Wallet) */
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .balance-chip { background: var(--card); padding: 8px 15px; border-radius: 20px; border: 1px solid #333; display: flex; align-items: center; gap: 8px; }
-        .balance-chip span { color: var(--blue); font-weight: bold; font-size: 18px; text-shadow: 0 0 8px var(--blue); }
-        .deposit-btn { background: var(--accent); color: #000; border: none; padding: 8px 18px; border-radius: 12px; font-weight: bold; font-size: 14px; }
+        /* Top Header */
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .user-info { display: flex; align-items: center; gap: 10px; }
+        .avatar { width: 40px; height: 40px; background: linear-gradient(45deg, #4776E6, #8E54E9); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 2px solid #333; }
+        .balance-box { background: #1c1c1c; padding: 5px 15px; border-radius: 20px; display: flex; align-items: center; gap: 8px; border: 1px solid #333; }
+        .balance-box span { color: white; font-size: 20px; font-weight: bold; }
+        .deposit-btn { background: #8e54e9; border: none; color: white; padding: 10px 20px; border-radius: 12px; font-weight: bold; box-shadow: 0 4px 15px rgba(142, 84, 233, 0.3); }
 
-        /* Rocket & PVP Banners */
-        .banner { width: 100%; height: 100px; border-radius: 20px; margin-bottom: 12px; display: flex; align-items: center; padding: 20px; box-sizing: border-box; position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); }
-        .rocket-banner { background: linear-gradient(90deg, #001f3f, #00d1ff22); }
-        .pvp-banner { background: linear-gradient(90deg, #2a003f, #f093fb22); }
-        .banner h2 { font-style: italic; font-size: 24px; color: var(--blue); z-index: 2; }
-        .rocket-anim { position: absolute; right: 20px; width: 80px; animation: fly 3s infinite ease-in-out; }
-        @keyframes fly { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        /* LIVE Section */
+        .live-bar { display: flex; gap: 10px; overflow-x: auto; margin-bottom: 20px; padding-bottom: 5px; }
+        .live-item { min-width: 50px; height: 50px; background: linear-gradient(135deg, #d49aff, #8e54e9); border-radius: 12px; }
 
-        /* Case Grid Section */
-        .grid-title { font-size: 14px; color: #888; text-transform: uppercase; margin: 20px 0 10px; font-weight: bold; }
-        .cases-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .case-card { background: var(--card); border-radius: 20px; padding: 15px; text-align: center; border: 1px solid #222; position: relative; transition: 0.3s; }
-        .case-card img { width: 90px; height: 90px; filter: drop-shadow(0 0 10px rgba(50, 205, 50, 0.2)); }
-        .case-card.pepe { border: 1px solid var(--accent); box-shadow: 0 0 15px rgba(50, 205, 50, 0.1); }
-        .price-tag { background: rgba(50, 205, 50, 0.15); color: var(--accent); padding: 4px 12px; border-radius: 10px; font-size: 12px; margin-top: 10px; display: inline-block; font-weight: bold; }
+        /* Banners (Rocket & PVP) */
+        .banner { border-radius: 25px; padding: 20px; margin-bottom: 12px; position: relative; overflow: hidden; height: 110px; box-sizing: border-box; }
+        .rocket-banner { background: linear-gradient(90deg, #94dfff, #64b5f6); color: white; }
+        .pvp-banner { background: linear-gradient(90deg, #ffcc33, #ffb300); color: white; }
+        .banner h2 { margin: 0; font-size: 28px; font-style: italic; font-weight: 900; }
+        .banner img { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); width: 100px; }
 
-        /* Bottom Navbar */
-        .navbar { position: fixed; bottom: 0; left: 0; width: 100%; background: #080808; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #1a1a1a; z-index: 1000; }
-        .nav-item { color: #555; text-align: center; text-decoration: none; font-size: 10px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-        .nav-item.active { color: var(--accent); }
-        .nav-item i { font-size: 20px; }
+        /* Small Buttons (Contracts & Upgrade) */
+        .small-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        .s-btn { padding: 15px; border-radius: 20px; display: flex; align-items: center; justify-content: space-between; font-weight: bold; font-size: 14px; text-transform: uppercase; }
+        .btn-purple { background: #5c2fb3; }
+        .btn-green { background: #2fb35c; }
 
-        /* Views (Pages) */
-        .view { display: none; }
-        .view.active { display: block; }
+        /* Bottom Nav */
+        .nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #181818; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #222; z-index: 100; }
+        .nav-item { color: #888; text-align: center; font-size: 10px; text-decoration: none; }
+        .nav-item i { font-size: 22px; display: block; margin-bottom: 4px; }
+        .nav-item.active { color: #8e54e9; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body>
 
-    <div id="home" class="view active">
-        <div class="header">
-            <div class="balance-chip">💎 <span id="balance">0.000</span></div>
-            <button class="deposit-btn" onclick="alert('Min: 0.1 TON / 250 Stars')">DEPOSIT</button>
-        </div>
-
-        <div class="banner rocket-banner">
-            <h2>ROCKET</h2>
-            <img src="https://cdn-icons-png.flaticon.com/512/1356/1356479.png" class="rocket-anim">
-        </div>
-        <div class="banner pvp-banner">
-            <h2>PVP BATTLE</h2>
-            <i class="fa-solid fa-swords" style="position:absolute; right:30px; font-size:50px; color:#f093fb; opacity:0.3;"></i>
-        </div>
-
-        <div class="grid-title">Exclusive Cases</div>
-        <div class="cases-grid">
-            <div class="case-card pepe" onclick="openCase('Pepe Free')">
-                <img src="https://i.ibb.co/vYm6v6K/pepe-gift.png">
-                <div style="font-size: 14px; margin-top: 5px;">Pepe Case</div>
-                <div class="price-tag">FREE</div>
-            </div>
-            <div class="case-card" onclick="openCase('Farm Case')">
-                <img src="https://cdn-icons-png.flaticon.com/512/2850/2850366.png">
-                <div style="font-size: 14px; margin-top: 5px;">Farm Case</div>
-                <div class="price-tag">0.1 TON</div>
-            </div>
-            <div class="case-card" onclick="openCase('VIP Case')">
-                <img src="https://cdn-icons-png.flaticon.com/512/1162/1162954.png">
-                <div style="font-size: 14px; margin-top: 5px;">VIP Case</div>
-                <div class="price-tag">10.0 TON</div>
-            </div>
-            <div class="case-card" onclick="openCase('Elite Case')">
-                <img src="https://cdn-icons-png.flaticon.com/512/2331/2331871.png">
-                <div style="font-size: 14px; margin-top: 5px;">Elite Case</div>
-                <div class="price-tag">50.0 TON</div>
+    <div class="header">
+        <div class="user-info">
+            <div class="avatar">MB</div>
+            <div style="font-size: 12px; color: #888;">Your balance<br>
+                <div class="balance-box">
+                    <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" width="20">
+                    <span>0.095</span>
+                </div>
             </div>
         </div>
+        <button class="deposit-btn"><span>+</span> Deposit</button>
     </div>
 
-    <div id="invite" class="view"><h2 style="margin-top:100px;">Invite Friends</h2><p>Share your link and earn 10%</p></div>
-    <div id="leader" class="view"><h2 style="margin-top:100px;">Leaderboard</h2><p>Top players of the week</p></div>
-    <div id="earn" class="view"><h2 style="margin-top:100px;">Earn Points</h2><p>Complete tasks to get free TON</p></div>
+    <div class="live-bar">
+        <div style="color:white; font-size: 12px; writing-mode: vertical-lr; transform: rotate(180deg); font-weight: bold;">LIVE •</div>
+        <div class="live-item"></div><div class="live-item"></div><div class="live-item"></div><div class="live-item"></div><div class="live-item"></div>
+    </div>
 
-    <div class="navbar">
-        <a href="javascript:void(0)" class="nav-item" onclick="showPage('home', this)"><i class="fa-solid fa-box-open"></i>Backpack</a>
-        <a href="javascript:void(0)" class="nav-item" onclick="showPage('invite', this)"><i class="fa-solid fa-user-plus"></i>Invite</a>
-        <a href="javascript:void(0)" class="nav-item active" onclick="showPage('home', this)"><i class="fa-solid fa-house"></i>Home</a>
-        <a href="javascript:void(0)" class="nav-item" onclick="showPage('leader', this)"><i class="fa-solid fa-ranking-star"></i>Leader</a>
-        <a href="javascript:void(0)" class="nav-item" onclick="showPage('earn', this)"><i class="fa-solid fa-wallet"></i>Earn</a>
+    <div class="banner rocket-banner">
+        <h2>ROCKET</h2>
+        <img src="https://cdn-icons-png.flaticon.com/512/1356/1356479.png">
+    </div>
+
+    <div class="banner pvp-banner">
+        <div style="background: white; color: orange; font-size: 10px; padding: 2px 8px; border-radius: 10px; display: inline-block; margin-bottom: 5px; font-weight: bold;">🔥 NEW!</div>
+        <h2>PVP</h2>
+        <img src="https://cdn-icons-png.flaticon.com/512/3233/3233483.png" style="width: 80px; opacity: 0.5;">
+    </div>
+
+    <div class="small-btns">
+        <div class="s-btn btn-purple"><span>📝 Contracts</span> <i class="fa-solid fa-chevron-right"></i></div>
+        <div class="s-btn btn-green"><span>⬆️ Upgrade</span> <i class="fa-solid fa-chevron-right"></i></div>
+    </div>
+
+    <div class="nav">
+        <div class="nav-item"><i class="fa-solid fa-box"></i>Backpack</div>
+        <div class="nav-item"><i class="fa-solid fa-user-plus"></i>Invite</div>
+        <div class="nav-item active"><i class="fa-solid fa-house"></i>Home</div>
+        <div class="nav-item"><i class="fa-solid fa-ranking-star"></i>Leaderboard</div>
+        <div class="nav-item"><i class="fa-solid fa-coins"></i>Earn</div>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
-        tg.headerColor = "#000000";
-
-        function showPage(pageId, element) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            element.classList.add('active');
-            tg.HapticFeedback.impactOccurred('light');
-        }
-
-        function openCase(name) {
-            tg.HapticFeedback.impactOccurred('heavy');
-            tg.showPopup({
-                title: 'Open Case',
-                message: 'Do you want to open ' + name + '?',
-                buttons: [{id: 'ok', type: 'default', text: 'Yes, open'}, {type: 'cancel'}]
-            });
-        }
+        tg.backgroundColor = "#121212";
+        tg.headerColor = "#121212";
     </script>
 </body>
 </html>
