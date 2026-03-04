@@ -1,1 +1,29 @@
-8743861596
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { background: #0e1621; color: white; text-align: center; font-family: sans-serif; }
+        .box { width: 200px; margin: 50px auto; cursor: pointer; transition: 0.3s; }
+        .box:active { transform: scale(0.9); }
+        h1 { color: #f39c12; }
+    </script>
+</head>
+<body>
+    <h1>NFT GIFT CASE</h1>
+    <div class="box" onclick="openBox()">
+        <img id="gift-img" src="https://cdn-icons-png.flaticon.com/512/6740/6740121.png" width="100%">
+        <p id="status">Qutini ochish uchun bosing!</p>
+    </div>
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+        function openBox() {
+            document.getElementById('gift-img').src = "https://cdn-icons-png.flaticon.com/512/744/744922.png";
+            document.getElementById('status').innerText = "Tabriklaymiz! Sizga NFT chiqdi! 🎉";
+            setTimeout(() => { tg.close(); }, 3000);
+        }
+    </script>
+</body>
+</html>
