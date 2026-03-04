@@ -2,7 +2,7 @@ import telebot
 from telebot import types
 
 # BotFather'dan olgan tokenni shu yerga qo'ying
-TOKEN = 'AAFN5YiHbRscPHxTwd_c2r0C6CzyM1gwzCw' 
+TOKEN = '8743861596:AAFN5YiHbRscPHxTwd_c2r0C6CzyM1gwzCw' 
 bot = telebot.TeleBot(TOKEN)
 
 # Tillardagi matnlar
