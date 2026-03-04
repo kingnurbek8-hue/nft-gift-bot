@@ -3,95 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Epic Gift Web App</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --bg-color: #0e0e0e; --card-bg: #1a1a1a; --primary: #7b61ff; --text: #ffffff; --accent: #00d1ff; }
-        body { background: var(--bg-color); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 15px; padding-bottom: 80px; }
+        :root { --bg: #0e0e0e; --card: #1a1a1a; --primary: #00d1ff; --text: #ffffff; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 15px; padding-bottom: 80px; }
         
-        .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
-        .balance-container { background: var(--card-bg); padding: 8px 15px; border-radius: 20px; border: 1px solid #333; display: flex; align-items: center; gap: 8px; }
-        .balance-container span { color: var(--accent); font-weight: bold; font-size: 18px; }
-        .deposit-btn { background: var(--primary); padding: 8px 18px; border-radius: 12px; font-weight: bold; text-decoration: none; color: white; font-size: 14px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .balance-box { background: var(--card); padding: 10px 15px; border-radius: 15px; border: 1px solid #333; }
+        .balance-box span { color: var(--primary); font-weight: bold; font-size: 20px; }
+        
+        .deposit-btn { background: linear-gradient(45deg, #00d1ff, #0072ff); color: white; border: none; padding: 10px 20px; border-radius: 12px; font-weight: bold; cursor: pointer; }
 
-        .banner { width: 100%; height: 100px; border-radius: 20px; margin-bottom: 12px; display: flex; align-items: center; padding: 20px; box-sizing: border-box; }
-        .rocket-banner { background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%); }
-        .pvp-banner { background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%); }
-        .banner h2 { margin: 0; font-size: 22px; color: white; text-shadow: 1px 1px 4px rgba(0,0,0,0.3); }
+        .cases-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .case-card { background: var(--card); border-radius: 20px; padding: 15px; text-align: center; border: 1px solid #333; transition: 0.3s; }
+        .case-card img { width: 100px; height: 100px; object-fit: contain; }
+        
+        .timer { font-size: 14px; color: #ffcc00; margin-top: 5px; font-weight: bold; }
+        .btn-open { background: var(--primary); color: black; border: none; width: 100%; padding: 10px; border-radius: 10px; margin-top: 10px; font-weight: bold; }
+        .btn-locked { background: #333; color: #777; border: none; width: 100%; padding: 10px; border-radius: 10px; margin-top: 10px; }
 
-        .grid-title { font-size: 18px; margin: 20px 0 10px; font-weight: bold; color: #888; text-transform: uppercase; letter-spacing: 1px; }
-        .cases-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .case-card { background: var(--card-bg); border-radius: 20px; padding: 15px; text-align: center; border: 1px solid #333; transition: 0.3s; }
-        .case-card img { width: 85px; height: 85px; margin-bottom: 10px; }
-        .price-btn { background: rgba(123, 97, 255, 0.15); color: var(--primary); padding: 6px 15px; border-radius: 12px; font-size: 14px; display: inline-block; font-weight: bold; border: 1px solid var(--primary); margin-top: 8px; }
-
-        .navbar { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(18, 18, 18, 0.95); backdrop-filter: blur(10px); display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #222; }
-        .nav-item { color: #555; text-align: center; text-decoration: none; font-size: 10px; transition: 0.3s; }
-        .nav-item.active { color: var(--primary); }
-        .nav-item i { font-size: 20px; display: block; margin-bottom: 4px; }
+        /* Modal (Deposit) */
+        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; background: #1c1c1c; border-radius: 25px; padding: 25px; z-index: 1000; border: 1px solid #444; }
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 999; }
     </style>
 </head>
 <body>
+
     <div class="header">
         <div>
-            <div style="font-size: 11px; color: #888; margin-bottom: 4px;">Your balance</div>
-            <div class="balance-container">
-                <i class="fa-solid fa-gem"></i>
-                <span id="balance">0.095</span>
-            </div>
+            <div style="font-size: 12px; color: #888;">Balance</div>
+            <div class="balance-box">💎 <span id="user-balance">0</span></div>
         </div>
-        <a href="#" class="deposit-btn">Deposit</a>
+        <button class="deposit-btn" onclick="showDeposit()">+ Deposit</button>
     </div>
 
-    <div class="banner rocket-banner">
-        <h2>ROCKET</h2>
-    </div>
-    <div class="banner pvp-banner">
-        <h2>PVP BATTLE</h2>
-    </div>
-
-    <div class="grid-title">Exclusive Cases</div>
     <div class="cases-grid">
-        <div class="case-card" onclick="openCase('FREE')">
-            <img src="https://cdn-icons-png.flaticon.com/512/6740/6740121.png">
-            <div style="font-size: 14px; font-weight: bold;">Free 24h</div>
-            <div class="price-btn">FREE</div>
+        <div class="case-card">
+            <img src="https://i.ibb.co/vYm6v6K/pepe-gift.png" alt="Pepe">
+            <div style="font-size: 14px; margin-top: 5px;">Pepe Case</div>
+            <button id="pepe-btn" class="btn-open" onclick="openPepe()">FREE OPEN</button>
+            <div id="pepe-timer" class="timer" style="display:none;">24:00:00</div>
         </div>
-        <div class="case-card" onclick="openCase('FARM')">
-            <img src="https://cdn-icons-png.flaticon.com/512/2850/2850366.png">
-            <div style="font-size: 14px; font-weight: bold;">Farm Case</div>
-            <div class="price-btn">0.1 TON</div>
-        </div>
-        <div class="case-card" onclick="openCase('VIP')">
-            <img src="https://cdn-icons-png.flaticon.com/512/1162/1162954.png">
-            <div style="font-size: 14px; font-weight: bold;">VIP Case</div>
-            <div class="price-btn">100 TON</div>
-        </div>
-        <div class="case-card" onclick="openCase('ELITE')">
+
+        <div class="case-card">
             <img src="https://cdn-icons-png.flaticon.com/512/2331/2331871.png">
-            <div style="font-size: 14px; font-weight: bold;">Elite Box</div>
-            <div class="price-btn">250 TON</div>
+            <div style="font-size: 14px; margin-top: 5px;">Gold Case</div>
+            <button class="btn-open">5.0 TON</button>
         </div>
     </div>
 
-    <div class="navbar">
-        <a href="#" class="nav-item"><i class="fa-solid fa-box-archive"></i>Backpack</a>
-        <a href="#" class="nav-item"><i class="fa-solid fa-user-plus"></i>Invite</a>
-        <a href="#" class="nav-item active"><i class="fa-solid fa-house"></i>Home</a>
-        <a href="#" class="nav-item"><i class="fa-solid fa-trophy"></i>Leader</a>
-        <a href="#" class="nav-item"><i class="fa-solid fa-wallet"></i>Earn</a>
+    <div class="overlay" id="overlay" onclick="hideDeposit()"></div>
+    <div class="modal" id="modal">
+        <h3>Top-up Balance</h3>
+        <p style="font-size: 12px; color: #888;">Select payment method:</p>
+        
+        <div style="margin-bottom: 15px; text-align: left;">
+            <label>TON (Min: 0.1, Max: 9999)</label>
+            <input type="number" id="ton-amount" placeholder="0.1" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #444; background: #000; color: white;">
+        </div>
+        
+        <div style="margin-bottom: 20px; text-align: left;">
+            <label>Stars (Min: 250, Max: 100000)</label>
+            <input type="number" id="stars-amount" placeholder="250" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #444; background: #000; color: white;">
+        </div>
+
+        <button class="deposit-btn" style="width: 100%;" onclick="pay()">PAY NOW</button>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
-        tg.headerColor = "#0e0e0e";
-        tg.backgroundColor = "#0e0e0e";
 
-        function openCase(name) {
-            tg.HapticFeedback.impactOccurred('medium');
-            alert("Opening " + name + " Case...");
+        function showDeposit() {
+            document.getElementById('modal').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+
+        function hideDeposit() {
+            document.getElementById('modal').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        }
+
+        function openPepe() {
+            // Botga obuna xabarini yuborish
+            tg.sendData("check_subscription_and_open_pepe");
+            
+            // Simulyatsiya (Vaqtni boshlash)
+            document.getElementById('pepe-btn').style.display = 'none';
+            document.getElementById('pepe-timer').style.display = 'block';
+            startTimer(24 * 60 * 60, 'pepe-timer');
+        }
+
+        function startTimer(duration, displayId) {
+            let timer = duration, hours, minutes, seconds;
+            setInterval(function () {
+                hours = parseInt(timer / 3600, 10);
+                minutes = parseInt((timer % 3600) / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+
+                document.getElementById(displayId).textContent = 
+                    (hours < 10 ? "0" + hours : hours) + ":" + 
+                    (minutes < 10 ? "0" + minutes : minutes) + ":" + 
+                    (seconds < 10 ? "0" + seconds : seconds);
+
+                if (--timer < 0) timer = 0;
+            }, 1000);
+        }
+
+        function pay() {
+            let ton = document.getElementById('ton-amount').value;
+            let stars = document.getElementById('stars-amount').value;
+            
+            if(ton >= 0.1 || stars >= 250) {
+                alert("Redirecting to payment...");
+            } else {
+                alert("Please enter valid amount!");
+            }
         }
     </script>
 </body>
