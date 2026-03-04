@@ -1,28 +1,113 @@
 <!DOCTYPE html>
-<html>
+<html lang="uz">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background: #0e1621; color: white; text-align: center; font-family: sans-serif; margin: 0; padding: 20px; }
-        .box { width: 150px; margin: 50px auto; cursor: pointer; transition: 0.3s; }
-        .box:active { transform: scale(0.9); }
-        h1 { color: #f39c12; font-size: 24px; }
+        :root { --bg-color: #0e0e0e; --card-bg: #1a1a1a; --primary: #7b61ff; --text: #ffffff; --accent: #00d1ff; }
+        body { background: var(--bg-color); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 15px; overflow-x: hidden; }
+        
+        /* Header section */
+        .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+        .user-profile { display: flex; align-items: center; gap: 10px; }
+        .avatar { width: 45px; height: 45px; background: linear-gradient(45deg, #7b61ff, #00d1ff); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; }
+        .balance-box { background: var(--card-bg); padding: 8px 15px; border-radius: 20px; border: 1px solid #333; display: flex; align-items: center; gap: 8px; }
+        .balance-box span { color: var(--accent); font-weight: bold; font-size: 18px; }
+        .deposit-btn { background: var(--primary); padding: 8px 15px; border-radius: 12px; font-weight: bold; text-decoration: none; color: white; font-size: 14px; }
+
+        /* Banners (Rocket/PVP) */
+        .banner { width: 100%; height: 110px; border-radius: 20px; margin-bottom: 12px; display: flex; align-items: center; padding: 20px; box-sizing: border-box; position: relative; overflow: hidden; }
+        .rocket-banner { background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%); }
+        .pvp-banner { background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%); }
+        .banner h2 { margin: 0; font-size: 24px; z-index: 2; }
+        .banner i { position: absolute; right: 20px; font-size: 60px; opacity: 0.3; }
+
+        /* Cases Grid */
+        .section-title { font-size: 18px; margin: 20px 0 10px; font-weight: bold; }
+        .cases-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .case-card { background: var(--card-bg); border-radius: 18px; padding: 15px; text-align: center; border: 1px solid #333; position: relative; }
+        .case-card img { width: 80px; height: 80px; margin-bottom: 10px; transition: transform 0.2s; }
+        .case-card:active img { transform: scale(0.9); }
+        .price-tag { background: rgba(123, 97, 255, 0.2); color: var(--primary); padding: 5px 12px; border-radius: 10px; font-size: 14px; display: inline-block; margin-top: 5px; font-weight: bold; border: 1px solid var(--primary); }
+
+        /* Bottom Navbar */
+        .navbar { position: fixed; bottom: 0; left: 0; width: 100%; background: #121212; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #222; z-index: 100; }
+        .nav-item { color: #555; text-align: center; text-decoration: none; font-size: 11px; }
+        .nav-item.active { color: var(--primary); }
+        .nav-item i { font-size: 20px; display: block; margin-bottom: 4px; }
     </style>
 </head>
 <body>
-    <h1>NFT GIFT CASE</h1>
-    <div class="box" onclick="openBox()">
-        <img id="gift-img" src="https://cdn-icons-png.flaticon.com/512/6740/6740121.png" width="100%">
-        <p id="status">Qutini ochish uchun bosing!</p>
+    <div class="header">
+        <div class="user-profile">
+            <div class="avatar" id="user-avatar">MB</div>
+            <div>
+                <div style="font-size: 12px; color: #888;">Your balance</div>
+                <div class="balance-box">
+                    <i class="fa-solid fa-gem" style="color:#00d1ff"></i>
+                    <span id="balance">0.095</span>
+                </div>
+            </div>
+        </div>
+        <a href="#" class="deposit-btn"><i class="fa-solid fa-wallet"></i> Deposit</a>
     </div>
+
+    <div class="banner rocket-banner">
+        <h2><i class="fa-solid fa-rocket"></i> ROCKET</h2>
+    </div>
+    <div class="banner pvp-banner">
+        <h2><i class="fa-solid fa-swords"></i> PVP BATTLE</h2>
+    </div>
+
+    <div class="section-title">Exclusive Cases</div>
+    <div class="cases-grid">
+        <div class="case-card" onclick="openCase('FREE')">
+            <img src="https://cdn-icons-png.flaticon.com/512/6740/6740121.png">
+            <div style="font-size: 14px;">Free 24h</div>
+            <div class="price-tag">FREE</div>
+        </div>
+        <div class="case-card" onclick="openCase('FARM')">
+            <img src="https://cdn-icons-png.flaticon.com/512/2850/2850366.png">
+            <div style="font-size: 14px;">Farm Case</div>
+            <div class="price-tag">0.1 TON</div>
+        </div>
+        <div class="case-card" onclick="openCase('VIP')">
+            <img src="https://cdn-icons-png.flaticon.com/512/1162/1162954.png">
+            <div style="font-size: 14px;">VIP Case</div>
+            <div class="price-tag">100 TON</div>
+        </div>
+        <div class="case-card" onclick="openCase('ELITE')">
+            <img src="https://cdn-icons-png.flaticon.com/512/2331/2331871.png">
+            <div style="font-size: 14px;">Elite Box</div>
+            <div class="price-tag">250 TON</div>
+        </div>
+    </div>
+
+    <div class="navbar">
+        <a href="#" class="nav-item"><i class="fa-solid fa-box-open"></i>Backpack</a>
+        <a href="#" class="nav-item"><i class="fa-solid fa-users"></i>Invite</a>
+        <a href="#" class="nav-item active"><i class="fa-solid fa-house"></i>Home</a>
+        <a href="#" class="nav-item"><i class="fa-solid fa-ranking-star"></i>Leader</a>
+        <a href="#" class="nav-item"><i class="fa-solid fa-coins"></i>Earn</a>
+    </div>
+
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
-        function openBox() {
-            document.getElementById('gift-img').src = "https://cdn-icons-png.flaticon.com/512/744/744922.png";
-            document.getElementById('status').innerText = "Tabriklaymiz! NFT chiqdi! 🎉";
-            setTimeout(() => { tg.close(); }, 3000);
+        tg.backgroundColor = "#0e0e0e";
+        tg.headerColor = "#0e0e0e";
+
+        // Foydalanuvchi ismini olish
+        let user = tg.initDataUnsafe.user;
+        if (user) {
+            document.getElementById('user-avatar').innerText = user.first_name.substring(0,2).toUpperCase();
+        }
+
+        function openCase(type) {
+            tg.HapticFeedback.impactOccurred('heavy');
+            alert(type + " case ochilmoqda... Omadingizni kuting!");
         }
     </script>
 </body>
